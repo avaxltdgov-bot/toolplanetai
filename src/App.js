@@ -61,6 +61,36 @@ export default function App() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const [fileLoading, setFileLoading] = useState(false);
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setFileLoading(true);
+    
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const base64 = ev.target.result.split(",")[1];
+      try {
+        const response = await fetch("https://toolplanetai-backend.onrender.com/api/extract", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ file: base64, mediaType: file.type, fileName: file.name })
+        });
+        const data = await response.json();
+        if (data.result) {
+          setInputText(data.result);
+        } else {
+          setInputText("❌ Could not read file. Please try again.");
+        }
+      } catch(err) {
+        setInputText("❌ Could not connect to server.");
+      }
+      setFileLoading(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const runTool = () => {
     if (!inputText.trim()) return;
     setLoading(true);
@@ -212,6 +242,10 @@ export default function App() {
                 <label style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "rgba(139,92,246,0.1)", border: "1px solid rgba(139,92,246,0.2)", borderRadius: 10, cursor: "pointer", fontSize: 12, fontWeight: 600, color: "#c4b5fd" }}>
                   {imageLoading ? "⏳ Reading..." : "📸 Upload Image"}
                   <input type="file" accept="image/*" capture="environment" onChange={handleImageUpload} style={{ display: "none" }} />
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.2)", borderRadius: 10, cursor: "pointer", fontSize: 12, fontWeight: 600, color: "#a78bfa" }}>
+                  {fileLoading ? "⏳ Reading..." : "📄 Upload PDF/Word"}
+                  <input type="file" accept=".pdf,.doc,.docx,.txt" onChange={handleFileUpload} style={{ display: "none" }} />
                 </label>
                 <div style={{ fontSize: 11, color: D.muted, display: "flex", alignItems: "center" }}>or type below</div>
               </div>

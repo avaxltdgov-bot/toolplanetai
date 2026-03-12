@@ -47,6 +47,55 @@ app.post("/api/ai", async (req, res) => {
   }
 });
 
+app.post("/api/extract", async (req, res) => {
+  const { file, mediaType, fileName } = req.body;
+  try {
+    let extractedText = "";
+    
+    // Handle text files directly
+    if (mediaType === "text/plain") {
+      extractedText = Buffer.from(file, "base64").toString("utf-8");
+      return res.json({ result: extractedText });
+    }
+
+    // Use Claude to extract text from PDF/Word
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01"
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 2048,
+        messages: [{ 
+          role: "user", 
+          content: [
+            { 
+              type: "document", 
+              source: { type: "base64", media_type: mediaType, data: file } 
+            },
+            { 
+              type: "text", 
+              text: "Extract all the text content from this document. Return only the extracted text, preserving paragraphs and structure. Nothing else." 
+            }
+          ]
+        }]
+      })
+    });
+    const data = await response.json();
+    if (data.content && data.content[0]) {
+      res.json({ result: data.content[0].text });
+    } else {
+      res.status(500).json({ error: "Could not extract text" });
+    }
+  } catch(err) {
+    console.error("Extract error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post("/api/image", async (req, res) => {
   const { image, mediaType } = req.body;
   try {
