@@ -1,3 +1,4 @@
+import PDFEditor from "./PDFEditor";
 import { useState } from "react";
 const aiTools = [
   { id: "summarize", icon: "📋", label: "AI Summarizer", desc: "Condense any text into key points", color: "#8b5cf6" },
@@ -8,7 +9,8 @@ const aiTools = [
   { id: "translate", icon: "🌍", label: "AI Translator", desc: "Translate to any language", color: "#ff006e" },
   { id: "prompt", icon: "⚡", label: "Prompt Generator", desc: "Generate powerful AI prompts", color: "#eab308" },
   { id: "email", icon: "📧", label: "Email Writer", desc: "Write professional emails", color: "#14b8a6" },
-  { id: "assignment", icon: "🎓", label: "Assignment Checker", desc: "Grade & get detailed feedback on your work", color: "#7c3aed" }
+  { id: "assignment", icon: "🎓", label: "Assignment Checker", desc: "Grade & get detailed feedback on your work", color: "#7c3aed" },
+  { id: "pdfeditor", icon: "📑", label: "PDFGenius AI", desc: "Upload any PDF — edit, rewrite & improve online instantly", color: "#dc2626" }
 ];
 
 export default function App() {
@@ -227,7 +229,9 @@ export default function App() {
             </div>
           )}
 
-          {currentTool && (
+          {activeTool === "pdfeditor" && <PDFEditor darkMode={darkMode} />}
+
+          {currentTool && activeTool !== "pdfeditor" && (
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
                 <span style={{ fontSize: 28 }}>{currentTool.icon}</span>
