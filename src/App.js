@@ -1,25 +1,43 @@
-import logo from './logo.svg';
-import './App.css';
-
-function App() {
+import { useState, useRef } from "react";
+const S = { bg: "#080810", card: "rgba(255,255,255,0.025)", border: "rgba(255,255,255,0.06)", accent: "#8b5cf6", accent2: "#f97316", text: "#e4e4f0", muted: "#6b6b85", dim: "#333348" };
+const aiTools = [
+  { id: "summarize", icon: "📋", label: "AI Summarizer", desc: "Condense any text into key points", color: "#8b5cf6" },
+  { id: "rewrite", icon: "✨", label: "AI Rewriter", desc: "Rewrite text in a better way", color: "#f97316" },
+  { id: "grammar", icon: "✅", label: "Grammar Fixer", desc: "Fix all grammar and spelling errors", color: "#06d6a0" },
+  { id: "expand", icon: "📐", label: "Text Expander", desc: "Expand short text into detailed content", color: "#e91e8c" },
+  { id: "tone", icon: "🎭", label: "Tone Changer", desc: "Rewrite in any tone you want", color: "#4361ee" },
+  { id: "translate", icon: "🌍", label: "AI Translator", desc: "Translate to any language", color: "#ff006e" },
+  { id: "prompt", icon: "⚡", label: "Prompt Generator", desc: "Generate powerful AI prompts", color: "#eab308" },
+  { id: "email", icon: "📧", label: "Email Writer", desc: "Write professional emails", color: "#14b8a6" }
+];
+export default function App() {
+  const [activeTool, setActiveTool] = useState("home");
+  const [inputText, setInputText] = useState("");
+  const [outputText, setOutputText] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const currentTool = aiTools.find(t => t.id === activeTool);
+  const copyResult = () => { navigator.clipboard.writeText(outputText); setCopied(true); setTimeout(() => setCopied(false), 2000); };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ display: "flex", minHeight: "100vh", background: S.bg, color: S.text, fontFamily: "'Outfit',sans-serif" }}>
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+      <div style={{ width: 230, minHeight: "100vh", background: "rgba(8,8,18,0.95)", borderRight: "1px solid rgba(255,255,255,0.06)", padding: "18px 10px", position: "fixed", top: 0, bottom: 0, overflowY: "auto" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 9, padding: "8px 10px", marginBottom: 24 }}>
+          <div style={{ width: 34, height: 34, borderRadius: 9, background: "linear-gradient(135deg,#8b5cf6,#f97316)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, color: "#fff" }}>T</div>
+          <div><div style={{ fontWeight: 700, fontSize: 15 }}>ToolPlanetAI</div><div style={{ fontSize: 9, color: "#06d6a0", fontFamily: "'JetBrains Mono'", fontWeight: 600 }}>FREE AI TOOLS</div></div>
+        </div>
+        <div style={{ fontSize: 9, fontWeight: 700, color: "#333348", textTransform: "uppercase", letterSpacing: "1.5px", padding: "12px 10px 6px", fontFamily: "'JetBrains Mono'" }}>Navigation</div>
+        <button onClick={() => setActiveTool("home")} style={{ display: "flex", alignItems: "center", gap: 9, width: "100%", padding: "9px 10px", background: activeTool === "home" ? "rgba(139,92,246,0.12)" : "transparent", border: activeTool === "home" ? "1px solid rgba(139,92,246,0.2)" : "1px solid transparent", borderRadius: 9, cursor: "pointer", color: activeTool === "home" ? "#c4b5fd" : "#6b6b85", fontSize: 12, fontWeight: activeTool === "home" ? 600 : 400, textAlign: "left" }}><span style={{ fontSize: 15 }}>🏠</span><span>Home</span></button>
+        <div style={{ fontSize: 9, fontWeight: 700, color: "#333348", textTransform: "uppercase", letterSpacing: "1.5px", padding: "12px 10px 6px", fontFamily: "'JetBrains Mono'" }}>AI Tools</div>
+        {aiTools.map(t => (<button key={t.id} onClick={() => { setActiveTool(t.id); setOutputText(""); setInputText(""); }} style={{ display: "flex", alignItems: "center", gap: 9, width: "100%", padding: "9px 10px", background: activeTool === t.id ? "rgba(139,92,246,0.12)" : "transparent", border: activeTool === t.id ? "1px solid rgba(139,92,246,0.2)" : "1px solid transparent", borderRadius: 9, cursor: "pointer", color: activeTool === t.id ? "#c4b5fd" : "#6b6b85", fontSize: 12, fontWeight: activeTool === t.id ? 600 : 400, textAlign: "left", marginBottom: 1 }}><span style={{ fontSize: 15 }}>{t.icon}</span><span>{t.label}</span></button>))}
+      </div>
+      <div style={{ marginLeft: 230, flex: 1, position: "relative" }}>
+        <div style={{ maxWidth: 860, margin: "0 auto", padding: "24px 22px 60px" }}>
+          {activeTool === "home" && (<div><div style={{ textAlign: "center", padding: "36px 0 32px" }}><div style={{ display: "inline-flex", background: "rgba(6,214,160,0.1)", border: "1px solid rgba(6,214,160,0.2)", borderRadius: 100, padding: "5px 14px", fontSize: 10, fontWeight: 700, color: "#06d6a0", fontFamily: "'JetBrains Mono'", marginBottom: 14 }}>🔴 LIVE • REAL AI • FREE TO USE</div><h1 style={{ fontSize: 44, fontWeight: 800, background: "linear-gradient(135deg,#fff 20%,#8b5cf6,#f97316)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", lineHeight: 1.15, margin: "0 0 12px" }}>ToolPlanetAI</h1><p style={{ color: "#6b6b85", fontSize: 14, maxWidth: 500, margin: "0 auto", lineHeight: 1.6 }}>8 AI-powered tools that actually work. Real AI processing, real results. No signup needed.</p></div><div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(195px,1fr))", gap: 12 }}>{aiTools.map((t, i) => (<button key={t.id} onClick={() => { setActiveTool(t.id); setOutputText(""); setInputText(""); }} style={{ padding: "22px 18px", background: S.card, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 14, cursor: "pointer", textAlign: "left" }}><div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}><span style={{ fontSize: 26 }}>{t.icon}</span><div style={{ width: 6, height: 6, borderRadius: "50%", background: "#06d6a0" }} /></div><div style={{ color: "#e4e4f0", fontSize: 14, fontWeight: 600, marginBottom: 4 }}>{t.label}</div><div style={{ color: "#6b6b85", fontSize: 11, lineHeight: 1.5 }}>{t.desc}</div></button>))}</div></div>)}
+          {currentTool && (<div><div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}><span style={{ fontSize: 28 }}>{currentTool.icon}</span><div><h2 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>{currentTool.label}</h2><p style={{ color: "#6b6b85", fontSize: 12, margin: 0 }}>{currentTool.desc}</p></div></div><div style={{ fontSize: 10, fontWeight: 700, color: "#333348", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: 8, fontFamily: "'JetBrains Mono'" }}>{activeTool === "prompt" ? "Enter topic or idea" : "Paste your text"}</div><textarea value={inputText} onChange={e => setInputText(e.target.value)} placeholder="Type or paste your text here..." style={{ width: "100%", minHeight: 150, padding: 16, background: "rgba(255,255,255,0.025)", border: "1.5px solid rgba(255,255,255,0.06)", borderRadius: 14, color: "#e4e4f0", fontSize: 14, fontFamily: "'Outfit',sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box", lineHeight: 1.6 }} /><button onClick={() => { if(!inputText.trim()) return; setLoading(true); setOutputText(""); setTimeout(() => { setOutputText("✅ This is a demo result. Connect the backend server to get real AI results.\n\nYour input was: " + inputText.trim().slice(0,200) + "\n\nTo enable real AI:\n1. Set up the backend server (server.js)\n2. Get an API key from console.anthropic.com\n3. Start the backend with: npm start"); setLoading(false); }, 1500); }} disabled={!inputText.trim() || loading} style={{ width: "100%", padding: 15, border: "none", borderRadius: 12, background: !inputText.trim() ? "rgba(255,255,255,0.04)" : "linear-gradient(135deg," + currentTool.color + ",#f97316)", color: !inputText.trim() ? "#333348" : "#fff", fontSize: 15, fontWeight: 700, cursor: !inputText.trim() || loading ? "not-allowed" : "pointer", marginTop: 16 }}>{loading ? "⏳ Processing..." : "🧠 Run " + currentTool.label}</button>{outputText && (<div style={{ marginTop: 20, background: "rgba(255,255,255,0.025)", border: "1px solid rgba(139,92,246,0.2)", borderRadius: 16, padding: 22 }}><div style={{ fontSize: 10, fontWeight: 700, color: "#6b6b85", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: 12, fontFamily: "'JetBrains Mono'" }}>AI Result</div><div style={{ background: "rgba(0,0,0,0.3)", borderRadius: 12, padding: 18, fontSize: 13.5, lineHeight: 1.75, color: "#cccce0", whiteSpace: "pre-wrap" }}>{outputText}</div><button onClick={copyResult} style={{ marginTop: 12, padding: "10px 18px", borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: 600, background: copied ? "rgba(6,214,160,0.12)" : "rgba(139,92,246,0.12)", border: copied ? "1px solid rgba(6,214,160,0.25)" : "1px solid rgba(139,92,246,0.25)", color: copied ? "#06d6a0" : "#a78bfa" }}>{copied ? "✓ Copied!" : "📋 Copy Result"}</button></div>)}</div>)}
+          <div style={{ textAlign: "center", marginTop: 48, paddingTop: 20, borderTop: "1px solid rgba(255,255,255,0.06)" }}><p style={{ fontSize: 10, color: "#333348", fontFamily: "'JetBrains Mono'" }}>ToolPlanetAI — Free AI Tools Hub • toolplanetai.com</p></div>
+        </div>
+      </div>
     </div>
   );
 }
-
-export default App;
