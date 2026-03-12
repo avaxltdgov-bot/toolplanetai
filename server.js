@@ -47,6 +47,62 @@ app.post("/api/ai", async (req, res) => {
   }
 });
 
+app.post("/api/generate-pdf", async (req, res) => {
+  const { text, fileName } = req.body;
+  try {
+    const { PDFDocument, rgb, StandardFonts } = await import("pdf-lib");
+    const pdfDoc = await PDFDocument.create();
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontSize = 12;
+    const margin = 50;
+    const lineHeight = fontSize * 1.6;
+    const pageWidth = 595;
+    const pageHeight = 842;
+    const maxWidth = pageWidth - margin * 2;
+
+    const lines = [];
+    const paragraphs = text.split("\n");
+    for (const para of paragraphs) {
+      if (!para.trim()) { lines.push(""); continue; }
+      const words = para.split(" ");
+      let currentLine = "";
+      for (const word of words) {
+        const testLine = currentLine ? currentLine + " " + word : word;
+        const width = font.widthOfTextAtSize(testLine, fontSize);
+        if (width > maxWidth && currentLine) {
+          lines.push(currentLine);
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      if (currentLine) lines.push(currentLine);
+    }
+
+    let page = pdfDoc.addPage([pageWidth, pageHeight]);
+    let y = pageHeight - margin;
+
+    for (const line of lines) {
+      if (y < margin + lineHeight) {
+        page = pdfDoc.addPage([pageWidth, pageHeight]);
+        y = pageHeight - margin;
+      }
+      if (line) {
+        page.drawText(line, { x: margin, y, font, size: fontSize, color: rgb(0, 0, 0) });
+      }
+      y -= lineHeight;
+    }
+
+    const pdfBytes = await pdfDoc.save();
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment");
+    res.send(Buffer.from(pdfBytes));
+  } catch(err) {
+    console.error("PDF gen error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post("/api/extract", async (req, res) => {
   const { file, mediaType, fileName } = req.body;
   try {

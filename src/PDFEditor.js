@@ -106,7 +106,7 @@ export default function PDFEditor({ darkMode }) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = fileName.replace(/\.[^/.]+$/, "") + "_edited.txt";
+    a.download = fileName.replace(/\.[^/.]+$/, "") + "_edited.pdf";
     a.click();
     URL.revokeObjectURL(url);
   };
