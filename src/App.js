@@ -1,4 +1,9 @@
 import PDFEditor from "./PDFEditor";
+import AssignmentChecker from "./AssignmentChecker";
+import AIDetector from "./AIDetector";
+import PlagiarismChecker from "./PlagiarismChecker";
+import CoverLetterWriter from "./CoverLetterWriter";
+import SEOOptimizer from "./SEOOptimizer";
 import { useState } from "react";
 const aiTools = [
   { id: "summarize", icon: "📋", label: "AI Summarizer", desc: "Condense any text into key points", color: "#8b5cf6" },
@@ -10,7 +15,10 @@ const aiTools = [
   { id: "prompt", icon: "⚡", label: "Prompt Generator", desc: "Generate powerful AI prompts", color: "#eab308" },
   { id: "email", icon: "📧", label: "Email Writer", desc: "Write professional emails", color: "#14b8a6" },
   { id: "assignment", icon: "🎓", label: "Assignment Checker", desc: "Grade & get detailed feedback on your work", color: "#7c3aed" },
-  { id: "pdfeditor", icon: "📑", label: "PDFGenius AI", desc: "Upload any PDF — edit, rewrite & improve online instantly", color: "#dc2626" }
+  { id: "aidetector", icon: "🔍", label: "AI Detector", desc: "Detect AI-written text sentence by sentence", color: "#dc2626" },
+  { id: "plagiarism", icon: "📝", label: "Plagiarism Checker", desc: "Check originality and highlight risky sentences", color: "#f97316" },
+  { id: "coverletter", icon: "📄", label: "Cover Letter Writer", desc: "AI cover letters that get you interviews", color: "#14b8a6" },
+  { id: "seo", icon: "🎯", label: "SEO Optimizer", desc: "Optimize content to rank higher on Google", color: "#eab308" },
 ];
 
 export default function App() {
@@ -153,7 +161,11 @@ export default function App() {
       ))}
 
       <div style={{ marginTop: "auto", padding: "12px 10px 0", borderTop: `1px solid ${D.border}` }}>
+        <div style={{display:"flex",flexDirection:"column",gap:6}}>
+        <a href="/about.html" style={{ fontSize: 10, color: D.dim, textDecoration: "none" }}>About</a>
+        <a href="/contact.html" style={{ fontSize: 10, color: D.dim, textDecoration: "none" }}>Contact</a>
         <a href="/privacy.html" style={{ fontSize: 10, color: D.dim, textDecoration: "none" }}>Privacy Policy</a>
+      </div>
       </div>
     </div>
   );
@@ -212,7 +224,7 @@ export default function App() {
               <div style={{ textAlign: "center", padding: "36px 0 32px" }}>
                 <div style={{ display: "inline-flex", background: "rgba(6,214,160,0.1)", border: "1px solid rgba(6,214,160,0.2)", borderRadius: 100, padding: "5px 14px", fontSize: 10, fontWeight: 700, color: "#06d6a0", fontFamily: "monospace", marginBottom: 14 }}>🔴 LIVE • REAL AI • FREE TO USE</div>
                 <h1 style={{ fontSize: "clamp(28px,6vw,44px)", fontWeight: 800, background: "linear-gradient(135deg,#fff 20%,#8b5cf6,#f97316)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", lineHeight: 1.15, margin: "0 0 12px" }}>ToolPlanetAI</h1>
-                <p style={{ color: D.muted, fontSize: 14, maxWidth: 500, margin: "0 auto", lineHeight: 1.6 }}>8 AI-powered tools that actually work. Real AI processing, real results. No signup needed.</p>
+                <p style={{ color: D.muted, fontSize: 14, maxWidth: 500, margin: "0 auto", lineHeight: 1.6 }}>13 free AI-powered tools that actually work. Real AI processing, real results. No signup needed.</p>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(160px,1fr))", gap: 12 }}>
                 {aiTools.map(t => (
@@ -230,8 +242,13 @@ export default function App() {
           )}
 
           {activeTool === "pdfeditor" && <PDFEditor darkMode={darkMode} />}
+          {activeTool === "assignment" && <AssignmentChecker darkMode={darkMode} />}
+          {activeTool === "aidetector" && <AIDetector darkMode={darkMode} />}
+          {activeTool === "plagiarism" && <PlagiarismChecker darkMode={darkMode} />}
+          {activeTool === "coverletter" && <CoverLetterWriter darkMode={darkMode} />}
+          {activeTool === "seo" && <SEOOptimizer darkMode={darkMode} />}
 
-          {currentTool && activeTool !== "pdfeditor" && (
+          {currentTool && activeTool !== "pdfeditor" && activeTool !== "assignment" && activeTool !== "aidetector" && activeTool !== "plagiarism" && activeTool !== "coverletter" && activeTool !== "seo" && (
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
                 <span style={{ fontSize: 28 }}>{currentTool.icon}</span>
@@ -271,7 +288,7 @@ export default function App() {
           )}
 
           <div style={{ textAlign: "center", marginTop: 48, paddingTop: 20, borderTop: `1px solid ${D.border}` }}>
-            <p style={{ fontSize: 10, color: D.dim, fontFamily: "monospace" }}>ToolPlanetAI — Free AI Tools Hub • <a href="/privacy.html" style={{ color: "#8b5cf6", textDecoration: "none" }}>Privacy Policy</a></p>
+            <p style={{ fontSize: 10, color: D.dim, fontFamily: "monospace" }}>ToolPlanetAI — 13 Free AI Tools • <a href="/about.html" style={{ color: "#8b5cf6", textDecoration: "none" }}>About</a> • <a href="/contact.html" style={{ color: "#8b5cf6", textDecoration: "none" }}>Contact</a> • <a href="/privacy.html" style={{ color: "#8b5cf6", textDecoration: "none" }}>Privacy Policy</a> • <a href="/sitemap.xml" style={{ color: "#8b5cf6", textDecoration: "none" }}>Sitemap</a></p>
           </div>
         </div>
       </div>
