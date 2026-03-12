@@ -7,7 +7,8 @@ const aiTools = [
   { id: "tone", icon: "🎭", label: "Tone Changer", desc: "Rewrite in any tone you want", color: "#4361ee" },
   { id: "translate", icon: "🌍", label: "AI Translator", desc: "Translate to any language", color: "#ff006e" },
   { id: "prompt", icon: "⚡", label: "Prompt Generator", desc: "Generate powerful AI prompts", color: "#eab308" },
-  { id: "email", icon: "📧", label: "Email Writer", desc: "Write professional emails", color: "#14b8a6" }
+  { id: "email", icon: "📧", label: "Email Writer", desc: "Write professional emails", color: "#14b8a6" },
+  { id: "assignment", icon: "🎓", label: "Assignment Checker", desc: "Grade & get detailed feedback on your work", color: "#7c3aed" }
 ];
 
 export default function App() {
