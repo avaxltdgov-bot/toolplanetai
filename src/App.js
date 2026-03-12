@@ -17,7 +17,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const currentTool = aiTools.find(t => t.id === activeTool);
-  const copyResult = () => { navigator.clipboard.writeText(outputText); setCopied(true); setTimeout(() => setCopied(false), 2000); };
+  const copyResult = () => { try { navigator.clipboard.writeText(outputText); } catch(e) { const el = document.createElement("textarea"); el.value = outputText; document.body.appendChild(el); el.select(); document.execCommand("copy"); document.body.removeChild(el); } setCopied(true); setTimeout(() => setCopied(false), 2000); };
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: S.bg, color: S.text, fontFamily: "'Outfit',sans-serif" }}>
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
