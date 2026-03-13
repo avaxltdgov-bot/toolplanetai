@@ -84,7 +84,10 @@ export default function AssignmentChecker({ darkMode }) {
 Assignment to analyze:
 ${text}`;
 
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 90000);
       const res = await fetch("https://toolplanetai-backend.onrender.com/api/ai", {
+        signal: controller.signal,
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tool: "summarize", input: prompt })
       });
@@ -94,7 +97,8 @@ ${text}`;
       if (!jsonMatch) throw new Error("No JSON found");
       setResult(JSON.parse(jsonMatch[0]));
     } catch(err) {
-      setResult({ error: "Analysis failed. Please try again." });
+      console.error("ASSIGN ERROR:", err.message, err);
+      setResult({ error: "Analysis failed: " + err.message });
     }
     setLoading(false);
   };
@@ -119,7 +123,10 @@ ${humanizeText}
 
 Return ONLY the rewritten text, nothing else.`;
 
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 90000);
       const res = await fetch("https://toolplanetai-backend.onrender.com/api/ai", {
+        signal: controller.signal,
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tool: "rewrite", input: prompt })
       });

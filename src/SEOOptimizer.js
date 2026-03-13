@@ -75,16 +75,21 @@ export default function SEOOptimizer({ darkMode }) {
 }
 Target keyword: ${keyword || "not specified"}
 Content: ${content}`;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 90000);
       const res = await fetch("https://toolplanetai-backend.onrender.com/api/ai", {
+        signal: controller.signal,
         method:"POST", headers:{"Content-Type":"application/json"},
         body: JSON.stringify({ tool:"summarize", input:prompt })
       });
       const data = await res.json();
-      const clean = data.result.replace(/```json|```/g,"").trim();
-      const jsonMatch = clean.match(/{[\s\S]*}/);
-      if (!jsonMatch) throw new Error("No JSON found");
-      setResult(JSON.parse(jsonMatch[0]));
-    } catch(e) { setResult({error:"Optimization failed. Try again."}); }
+      console.log("RAW:", data.result);
+      const clean = (data.result||"").replace(/```json|```/g,"").trim();
+      const jsonStart = clean.indexOf("{");
+      const jsonEnd = clean.lastIndexOf("}");
+      if (jsonStart===-1||jsonEnd===-1) throw new Error("No JSON: "+clean.slice(0,100));
+      setResult(JSON.parse(clean.slice(jsonStart,jsonEnd+1)));
+    } catch(e) { console.error("TOOL ERROR:", e.message, e); setResult({error:"Optimization failed: " + e.message}); }
     setLoading(false);
   };
 

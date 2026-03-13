@@ -179,3 +179,12 @@ app.post("/api/image", async (req, res) => {
 });
 
 app.listen(3001, () => console.log("✅ Backend running on http://localhost:3001"));
+
+// Keep-alive ping every 14 minutes to prevent sleeping
+setInterval(() => {
+  fetch("https://toolplanetai-backend.onrender.com/ping")
+    .then(() => console.log("Keep-alive ping sent"))
+    .catch(() => {});
+}, 14 * 60 * 1000);
+
+app.get("/ping", (req, res) => res.json({ status: "alive" }));
