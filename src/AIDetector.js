@@ -19,20 +19,35 @@ export default function AIDetector({ darkMode }) {
     const f = e.target.files[0];
     if (!f) return;
     setFileLoading(true);
+    const ext = f.name.split(".").pop().toLowerCase();
     const reader = new FileReader();
     reader.onload = async (ev) => {
-      const base64 = ev.target.result.split(",")[1];
       try {
-        const response = await fetch("https://toolplanetai-backend.onrender.com/api/extract", {
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body: JSON.stringify({ file:base64, mediaType:f.type, fileName:f.name })
-        });
-        const data = await response.json();
-        if (data.result) setText(data.result);
-      } catch(e) { setText("Could not read file."); }
+        if (ext === "txt") {
+          setText(ev.target.result);
+        } else if (ext === "docx" || ext === "doc") {
+          const mammoth = await import("mammoth");
+          const result = await mammoth.extractRawText({ arrayBuffer: ev.target.result });
+          setText(result.value || "Could not read file.");
+        } else if (ext === "pdf") {
+          const base64 = btoa(new Uint8Array(ev.target.result).reduce((d,b)=>d+String.fromCharCode(b),""));
+          const response = await fetch("https://toolplanetai-backend.onrender.com/api/extract", {
+            method:"POST", headers:{"Content-Type":"application/json"},
+            body: JSON.stringify({ file:base64, mediaType:f.type, fileName:f.name })
+          });
+          const data = await response.json();
+          setText(data.result || "Could not read PDF.");
+        } else {
+          setText("Unsupported file type. Please upload PDF, Word, or TXT.");
+        }
+      } catch(err) {
+        console.error(err);
+        setText("Could not read file. Please paste text manually.");
+      }
       setFileLoading(false);
     };
-    reader.readAsDataURL(f);
+    if (ext === "txt") reader.readAsText(f);
+    else reader.readAsArrayBuffer(f);
   };
 
   const analyze = async () => {
@@ -59,7 +74,9 @@ Analyze every sentence. Text: ${text}`;
       });
       const data = await res.json();
       const clean = data.result.replace(/```json|```/g,"").trim();
-      setResult(JSON.parse(clean));
+      const jsonMatch = clean.match(/{[\s\S]*}/);
+      if (!jsonMatch) throw new Error("No JSON found");
+      setResult(JSON.parse(jsonMatch[0]));
     } catch(e) { setResult({error:"Analysis failed. Try again."}); }
     setLoading(false);
   };

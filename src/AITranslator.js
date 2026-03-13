@@ -50,22 +50,38 @@ export default function AITranslator({ darkMode }) {
   };
 
   const handleFileUpload = async (e) => {
-    const f = e.target.files[0]; if (!f) return;
+    const f = e.target.files[0];
+    if (!f) return;
     setFileLoading(true);
+    const ext = f.name.split(".").pop().toLowerCase();
     const reader = new FileReader();
     reader.onload = async (ev) => {
-      const base64 = ev.target.result.split(",")[1];
       try {
-        const res = await fetch("https://toolplanetai-backend.onrender.com/api/extract", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ file: base64, mediaType: f.type, fileName: f.name })
-        });
-        const data = await res.json();
-        setInputText(data.result || "Could not read file.");
-      } catch(e) { setInputText("Could not connect to server."); }
+        if (ext === "txt") {
+          setInputText(ev.target.result);
+        } else if (ext === "docx" || ext === "doc") {
+          const mammoth = await import("mammoth");
+          const result = await mammoth.extractRawText({ arrayBuffer: ev.target.result });
+          setInputText(result.value || "Could not read file.");
+        } else if (ext === "pdf") {
+          const base64 = btoa(new Uint8Array(ev.target.result).reduce((d,b)=>d+String.fromCharCode(b),""));
+          const response = await fetch("https://toolplanetai-backend.onrender.com/api/extract", {
+            method:"POST", headers:{"Content-Type":"application/json"},
+            body: JSON.stringify({ file:base64, mediaType:f.type, fileName:f.name })
+          });
+          const data = await response.json();
+          setInputText(data.result || "Could not read PDF.");
+        } else {
+          setInputText("Unsupported file type. Please upload PDF, Word, or TXT.");
+        }
+      } catch(err) {
+        console.error(err);
+        setInputText("Could not read file. Please paste text manually.");
+      }
       setFileLoading(false);
     };
-    reader.readAsDataURL(f);
+    if (ext === "txt") reader.readAsText(f);
+    else reader.readAsArrayBuffer(f);
   };
 
   const copy = () => {

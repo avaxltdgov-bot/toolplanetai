@@ -24,19 +24,34 @@ export default function AssignmentChecker({ darkMode }) {
     const f = e.target.files[0];
     if (!f) return;
     setFile(f.name);
+    const ext = f.name.split(".").pop().toLowerCase();
     const reader = new FileReader();
     reader.onload = async (ev) => {
-      const base64 = ev.target.result.split(",")[1];
       try {
-        const response = await fetch("https://toolplanetai-backend.onrender.com/api/extract", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ file: base64, mediaType: f.type, fileName: f.name })
-        });
-        const data = await response.json();
-        if (data.result) setText(data.result);
-      } catch(err) { setText("Could not read file."); }
+        if (ext === "txt") {
+          setText(ev.target.result);
+        } else if (ext === "docx" || ext === "doc") {
+          const mammoth = await import("mammoth");
+          const result = await mammoth.extractRawText({ arrayBuffer: ev.target.result });
+          setText(result.value || "Could not read file.");
+        } else if (ext === "pdf") {
+          const base64 = btoa(new Uint8Array(ev.target.result).reduce((d,b)=>d+String.fromCharCode(b),""));
+          const response = await fetch("https://toolplanetai-backend.onrender.com/api/extract", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ file: base64, mediaType: f.type, fileName: f.name })
+          });
+          const data = await response.json();
+          setText(data.result || "Could not read PDF.");
+        } else {
+          setText("Unsupported file type.");
+        }
+      } catch(err) {
+        console.error(err);
+        setText("Could not read file. Please paste text manually.");
+      }
     };
-    reader.readAsDataURL(f);
+    if (ext === "txt") reader.readAsText(f);
+    else reader.readAsArrayBuffer(f);
   };
 
   const runCheck = async () => {
@@ -74,9 +89,10 @@ ${text}`;
         body: JSON.stringify({ tool: "summarize", input: prompt })
       });
       const data = await res.json();
-      const clean = data.result.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(clean);
-      setResult(parsed);
+      const clean = data.result.replace(/```json|```/g,"").trim();
+      const jsonMatch = clean.match(/{[\s\S]*}/);
+      if (!jsonMatch) throw new Error("No JSON found");
+      setResult(JSON.parse(jsonMatch[0]));
     } catch(err) {
       setResult({ error: "Analysis failed. Please try again." });
     }
