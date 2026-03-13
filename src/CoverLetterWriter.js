@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function CoverLetterWriter({ darkMode }) {
+export default function CoverLetterWriter({ darkMode, downloadAsWord }) {
   const [jobTitle, setJobTitle] = useState("");
   const [company, setCompany] = useState("");
   const [skills, setSkills] = useState("");
@@ -139,9 +139,14 @@ Write a complete, ready-to-send cover letter. Make it personal, engaging, and ta
         <div style={{marginTop:20,background:D.card,border:"1px solid rgba(20,184,166,0.2)",borderRadius:16,padding:22}}>
           <div style={{fontSize:12,fontWeight:700,color:"#14b8a6",textTransform:"uppercase",letterSpacing:1,marginBottom:12}}>✅ Your Cover Letter</div>
           <div style={{background:darkMode?"rgba(0,0,0,0.3)":"rgba(0,0,0,0.03)",borderRadius:12,padding:18,fontSize:14,lineHeight:1.9,color:D.text,whiteSpace:"pre-wrap",fontFamily:"Georgia,serif"}}>{result}</div>
-          <button onClick={copy} style={{marginTop:12,padding:"10px 18px",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,background:copied?"rgba(6,214,160,0.1)":"rgba(20,184,166,0.1)",border:copied?"1px solid rgba(6,214,160,0.25)":"1px solid rgba(20,184,166,0.25)",color:copied?"#06d6a0":"#14b8a6"}}>
-            {copied?"✓ Copied!":"📋 Copy Cover Letter"}
-          </button>
+          <div style={{display:"flex",gap:8,marginTop:12,flexWrap:"wrap"}}>
+            <button onClick={copy} style={{padding:"10px 18px",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,background:copied?"rgba(6,214,160,0.1)":"rgba(20,184,166,0.1)",border:copied?"1px solid rgba(6,214,160,0.25)":"1px solid rgba(20,184,166,0.25)",color:copied?"#06d6a0":"#14b8a6"}}>
+              {copied?"✓ Copied!":"📋 Copy"}
+            </button>
+            <button onClick={()=>downloadAsWord(result,"Cover_Letter")} style={{padding:"10px 18px",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,background:"rgba(67,97,238,0.1)",border:"1px solid rgba(67,97,238,0.25)",color:"#4361ee"}}>
+              📥 Download Word
+            </button>
+          </div>
         </div>
       )}
     </div>

@@ -123,6 +123,16 @@ export default function App() {
 
   const toggleTheme = () => { setSwinging(true); setTimeout(() => setSwinging(false), 600); setDarkMode(!darkMode); };
 
+
+  const downloadAsWord = (text, filename) => {
+    const html = `<html><head><meta charset="utf-8"></head><body><pre style="font-family:Arial;font-size:12pt;white-space:pre-wrap;">${text.replace(/</g,"&lt;").replace(/>/g,"&gt;")}</pre></body></html>`;
+    const blob = new Blob([html], {type: "application/msword"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename + ".doc"; a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const copyResult = () => {
     try { navigator.clipboard.writeText(outputText); }
     catch(e) { const el=document.createElement("textarea");el.value=outputText;document.body.appendChild(el);el.select();document.execCommand("copy");document.body.removeChild(el); }
@@ -352,11 +362,11 @@ export default function App() {
 
         {/* SPECIAL TOOLS */}
         {activeTool==="pdfeditor" && <div style={{animation:"fadeIn 0.3s ease"}}><PDFEditor darkMode={darkMode}/></div>}
-        {activeTool==="assignment" && <div style={{animation:"fadeIn 0.3s ease"}}><AssignmentChecker darkMode={darkMode}/></div>}
-        {activeTool==="aidetector" && <div style={{animation:"fadeIn 0.3s ease"}}><AIDetector darkMode={darkMode}/></div>}
-        {activeTool==="plagiarism" && <div style={{animation:"fadeIn 0.3s ease"}}><PlagiarismChecker darkMode={darkMode}/></div>}
-        {activeTool==="coverletter" && <div style={{animation:"fadeIn 0.3s ease"}}><CoverLetterWriter darkMode={darkMode}/></div>}
-        {activeTool==="seo" && <div style={{animation:"fadeIn 0.3s ease"}}><SEOOptimizer darkMode={darkMode}/></div>}
+        {activeTool==="assignment" && <div style={{animation:"fadeIn 0.3s ease"}}><AssignmentChecker darkMode={darkMode} downloadAsWord={downloadAsWord}/></div>}
+        {activeTool==="aidetector" && <div style={{animation:"fadeIn 0.3s ease"}}><AIDetector darkMode={darkMode} downloadAsWord={downloadAsWord}/></div>}
+        {activeTool==="plagiarism" && <div style={{animation:"fadeIn 0.3s ease"}}><PlagiarismChecker darkMode={darkMode} downloadAsWord={downloadAsWord}/></div>}
+        {activeTool==="coverletter" && <div style={{animation:"fadeIn 0.3s ease"}}><CoverLetterWriter darkMode={darkMode} downloadAsWord={downloadAsWord}/></div>}
+        {activeTool==="seo" && <div style={{animation:"fadeIn 0.3s ease"}}><SEOOptimizer darkMode={darkMode} downloadAsWord={downloadAsWord}/></div>}
         {activeTool==="translate" && <div style={{animation:"fadeIn 0.3s ease"}}><AITranslator darkMode={darkMode}/></div>}
 
         {/* GENERIC TOOLS */}

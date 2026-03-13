@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function AssignmentChecker({ darkMode }) {
+export default function AssignmentChecker({ darkMode, downloadAsWord }) {
   const [text, setText] = useState("");
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -82,9 +82,10 @@ export default function AssignmentChecker({ darkMode }) {
 }
 
 Assignment to analyze:
-${text}`;
+${text.slice(0,2000)}`;
 
       const controller = new AbortController();
+      // eslint-disable-next-line
       const timeout = setTimeout(() => controller.abort(), 90000);
       const res = await fetch("https://toolplanetai-backend.onrender.com/api/ai", {
         signal: controller.signal,
@@ -124,6 +125,7 @@ ${humanizeText}
 Return ONLY the rewritten text, nothing else.`;
 
       const controller = new AbortController();
+      // eslint-disable-next-line
       const timeout = setTimeout(() => controller.abort(), 90000);
       const res = await fetch("https://toolplanetai-backend.onrender.com/api/ai", {
         signal: controller.signal,
@@ -216,6 +218,28 @@ Return ONLY the rewritten text, nothing else.`;
 
           {result && !result.error && (
             <div style={{ marginTop:24 }}>
+              <button onClick={()=>downloadAsWord(`ASSIGNMENT ANALYSIS REPORT
+Grade: ${result.grade} (${result.score}/100)
+AI Written: ${result.ai_probability}%  |  Plagiarism Risk: ${result.plagiarism_risk}
+Reading Level: ${result.reading_level}  |  Word Count: ${result.word_count}
+
+DETAILED SCORES
+Overall: ${result.score}%  |  Grammar: ${result.grammar_score}%  |  Structure: ${result.structure_score}%  |  Originality: ${result.originality_score}%
+
+STRENGTHS
+${result.strengths?.join("\n")}
+
+IMPROVEMENTS NEEDED
+${result.improvements?.join("\n")}
+
+DETAILED FEEDBACK
+${result.detailed_feedback}
+
+SUGGESTED CHANGES
+${result.suggested_changes?.join("\n")}
+`,"Assignment_Report")} style={{marginBottom:16,padding:"10px 20px",borderRadius:10,border:"1px solid rgba(124,58,237,0.3)",background:"rgba(124,58,237,0.1)",color:"#c4b5fd",fontSize:13,fontWeight:600,cursor:"pointer"}}>
+                📥 Download Report as Word
+              </button>
               {/* Top Score Cards */}
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:12, marginBottom:20 }}>
                 {/* Grade */}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function SEOOptimizer({ darkMode }) {
+export default function SEOOptimizer({ darkMode, downloadAsWord }) {
   const [content, setContent] = useState("");
   const [keyword, setKeyword] = useState("");
   const [result, setResult] = useState(null);
@@ -74,8 +74,9 @@ export default function SEOOptimizer({ darkMode }) {
   "estimated_read_time": "2 min"
 }
 Target keyword: ${keyword || "not specified"}
-Content: ${content}`;
+Content: ${content.slice(0,2000)}`;
       const controller = new AbortController();
+      // eslint-disable-next-line
       const timeout = setTimeout(() => controller.abort(), 90000);
       const res = await fetch("https://toolplanetai-backend.onrender.com/api/ai", {
         signal: controller.signal,
@@ -193,9 +194,14 @@ Content: ${content}`;
           <div style={{padding:16,background:D.card,border:"1px solid rgba(139,92,246,0.2)",borderRadius:14,marginBottom:16}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
               <div style={{fontSize:13,fontWeight:700,color:"#8b5cf6"}}>✨ SEO-Optimized Content</div>
-              <button onClick={()=>copy(result.optimized_content)} style={{padding:"6px 12px",borderRadius:8,border:"1px solid rgba(139,92,246,0.3)",background:"rgba(139,92,246,0.1)",color:"#c4b5fd",fontSize:11,fontWeight:600,cursor:"pointer"}}>
-                {copied?"✓ Copied!":"📋 Copy"}
-              </button>
+              <div style={{display:"flex",gap:8}}>
+                <button onClick={()=>copy(result.optimized_content)} style={{padding:"6px 12px",borderRadius:8,border:"1px solid rgba(139,92,246,0.3)",background:"rgba(139,92,246,0.1)",color:"#c4b5fd",fontSize:11,fontWeight:600,cursor:"pointer"}}>
+                  {copied?"✓ Copied!":"📋 Copy"}
+                </button>
+                <button onClick={()=>downloadAsWord(result.optimized_content,"SEO_Optimized_Content")} style={{padding:"6px 12px",borderRadius:8,border:"1px solid rgba(67,97,238,0.3)",background:"rgba(67,97,238,0.1)",color:"#4361ee",fontSize:11,fontWeight:600,cursor:"pointer"}}>
+                  📥 Download Word
+                </button>
+              </div>
             </div>
             <div style={{background:darkMode?"rgba(0,0,0,0.3)":"rgba(0,0,0,0.03)",borderRadius:10,padding:16,fontSize:13,lineHeight:1.8,color:D.text,whiteSpace:"pre-wrap"}}>{result.optimized_content}</div>
           </div>

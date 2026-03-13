@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function AIDetector({ darkMode }) {
+export default function AIDetector({ darkMode, downloadAsWord }) {
   const [text, setText] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -54,7 +54,6 @@ export default function AIDetector({ darkMode }) {
     if (!text.trim()) return;
     setLoading(true); setResult(null);
     try {
-      const wordCount = text.trim().split(/\s+/).length;
       const prompt = `You are an expert AI content detector. Analyze this text and return ONLY a JSON object with NO extra text:
 {
   "ai_percentage": 78,
@@ -74,6 +73,7 @@ Rules:
 
 Text: ${text.slice(0, 2000)}`;
       const controller = new AbortController();
+      // eslint-disable-next-line
       const timeout = setTimeout(() => controller.abort(), 90000);
       const res = await fetch("https://toolplanetai-backend.onrender.com/api/ai", {
         signal: controller.signal,
@@ -95,6 +95,7 @@ Text: ${text.slice(0, 2000)}`;
     setHumanizing(idx);
     try {
       const controller = new AbortController();
+      // eslint-disable-next-line
       const timeout = setTimeout(() => controller.abort(), 90000);
       const res = await fetch("https://toolplanetai-backend.onrender.com/api/ai", {
         signal: controller.signal,
@@ -143,6 +144,20 @@ Text: ${text.slice(0, 2000)}`;
 
       {result && !result.error && (
         <div style={{marginTop:24}}>
+          <button onClick={()=>downloadAsWord(`AI DETECTION REPORT
+AI Score: ${result.ai_percentage}%  |  Verdict: ${result.verdict}  |  Confidence: ${result.confidence}
+
+OVERALL ANALYSIS
+${result.overall_analysis}
+
+AI PATTERNS FOUND
+${result.ai_patterns?.join("\n")}
+
+HUMAN PATTERNS
+${result.human_patterns?.join("\n")}
+`,"AI_Detection_Report")} style={{marginBottom:16,padding:"10px 20px",borderRadius:10,border:"1px solid rgba(220,38,38,0.3)",background:"rgba(220,38,38,0.1)",color:"#f87171",fontSize:13,fontWeight:600,cursor:"pointer"}}>
+            📥 Download Report as Word
+          </button>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:12,marginBottom:20}}>
             <div style={{padding:20,background:D.card,border:`1px solid ${D.border}`,borderRadius:16,textAlign:"center"}}>
               <div style={{fontSize:11,color:D.muted,fontWeight:600,marginBottom:8,textTransform:"uppercase",letterSpacing:1}}>AI Score</div>

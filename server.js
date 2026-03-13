@@ -1,11 +1,49 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-app.use(cors());
-app.use(express.json());
+
+// ── SECURITY: Only allow your domain ──
+const allowedOrigins = [
+  "https://toolplanetai.com",
+  "http://localhost:3000"
+];
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  }
+}));
+
+// ── SECURITY: Limit request size to 5MB ──
+app.use(express.json({ limit: "5mb" }));
+
+// ── SECURITY: Rate limiting (100 requests per 15 min per IP) ──
+const rateLimit = {};
+const RATE_LIMIT = 100;
+const RATE_WINDOW = 15 * 60 * 1000;
+const rateLimiter = (req, res, next) => {
+  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress || "unknown";
+  const now = Date.now();
+  if (!rateLimit[ip]) rateLimit[ip] = { count: 0, start: now };
+  if (now - rateLimit[ip].start > RATE_WINDOW) {
+    rateLimit[ip] = { count: 0, start: now };
+  }
+  rateLimit[ip].count++;
+  if (rateLimit[ip].count > RATE_LIMIT) {
+    return res.status(429).json({ error: "Too many requests. Please wait a moment." });
+  }
+  next();
+};
+app.use("/api", rateLimiter);
 
 app.post("/api/ai", async (req, res) => {
   const { tool, input } = req.body;
+  // ── SECURITY: Validate input ──
+  if (!input || typeof input !== "string") return res.status(400).json({ error: "Invalid input" });
+  if (input.length > 20000) return res.status(400).json({ error: "Input too long (max 20,000 chars)" });
   const prompts = {
     translate: `Translate this text to English. If already English, translate to Spanish:\n\n${input}`,
     summarize: `Summarize this text in 3-5 bullet points:\n\n${input}`,
@@ -35,15 +73,14 @@ app.post("/api/ai", async (req, res) => {
       })
     });
     const data = await response.json();
-    console.log("API response:", JSON.stringify(data).slice(0, 200));
     if (data.content && data.content[0]) {
       res.json({ result: data.content[0].text });
     } else {
-      res.json({ error: data.error?.message || "Unknown error", raw: data });
+      res.status(500).json({ error: "AI service error. Please try again." });
     }
   } catch (err) {
     console.error("Error:", err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "Server error. Please try again." });
   }
 });
 
@@ -105,6 +142,12 @@ app.post("/api/generate-pdf", async (req, res) => {
 
 app.post("/api/extract", async (req, res) => {
   const { file, mediaType, fileName } = req.body;
+  // ── SECURITY: Validate file ──
+  const allowed = ["application/pdf","text/plain","image/jpeg","image/png","image/webp","image/gif"];
+  if (!file || !mediaType) return res.status(400).json({ error: "Missing file or type" });
+  if (!allowed.includes(mediaType) && !mediaType.includes("word") && !mediaType.includes("document")) {
+    return res.status(400).json({ error: "File type not allowed" });
+  }
   try {
     let extractedText = "";
     
@@ -178,7 +221,10 @@ app.post("/api/image", async (req, res) => {
   }
 });
 
-app.listen(3001, () => console.log("✅ Backend running on http://localhost:3001"));
+app.get("/ping", (req, res) => res.json({ status: "alive", time: new Date().toISOString() }));
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => console.log("✅ Backend running on port", PORT));
 
 // Keep-alive ping every 14 minutes to prevent sleeping
 setInterval(() => {
@@ -186,5 +232,3 @@ setInterval(() => {
     .then(() => console.log("Keep-alive ping sent"))
     .catch(() => {});
 }, 14 * 60 * 1000);
-
-app.get("/ping", (req, res) => res.json({ status: "alive" }));

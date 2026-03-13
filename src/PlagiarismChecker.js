@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function PlagiarismChecker({ darkMode }) {
+export default function PlagiarismChecker({ darkMode, downloadAsWord }) {
   const [text, setText] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -66,8 +66,9 @@ export default function PlagiarismChecker({ darkMode }) {
   "recommendations": ["rec1", "rec2", "rec3"],
   "overall_feedback": "2 sentence overall feedback"
 }
-Text: ${text}`;
+Text: ${text.slice(0,2000)}`;
       const controller = new AbortController();
+      // eslint-disable-next-line
       const timeout = setTimeout(() => controller.abort(), 90000);
       const res = await fetch("https://toolplanetai-backend.onrender.com/api/ai", {
         signal: controller.signal,
@@ -115,6 +116,21 @@ Text: ${text}`;
 
       {result && !result.error && (
         <div style={{marginTop:24}}>
+          <button onClick={()=>downloadAsWord(`PLAGIARISM CHECK REPORT
+Plagiarism: ${result.plagiarism_percentage}%  |  Unique: ${result.unique_percentage}%
+Risk Level: ${result.risk_level}  |  Verdict: ${result.verdict}
+
+OVERALL FEEDBACK
+${result.overall_feedback}
+
+RECOMMENDATIONS
+${result.recommendations?.join("\n")}
+
+FLAGGED PHRASES
+${result.common_phrases?.join(", ")}
+`,"Plagiarism_Report")} style={{marginBottom:16,padding:"10px 20px",borderRadius:10,border:"1px solid rgba(249,115,22,0.3)",background:"rgba(249,115,22,0.1)",color:"#fb923c",fontSize:13,fontWeight:600,cursor:"pointer"}}>
+            📥 Download Report as Word
+          </button>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:12,marginBottom:20}}>
             <div style={{padding:20,background:D.card,border:`1px solid ${D.border}`,borderRadius:16,textAlign:"center"}}>
               <div style={{fontSize:11,color:D.muted,fontWeight:600,marginBottom:8,textTransform:"uppercase",letterSpacing:1}}>Plagiarism</div>
