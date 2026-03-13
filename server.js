@@ -30,7 +30,7 @@ app.post("/api/ai", async (req, res) => {
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 4096,
+        max_tokens: 8192,
         messages: [{ role: "user", content: input }]
       })
     });
@@ -164,7 +164,7 @@ app.post("/api/image", async (req, res) => {
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 4096,
+        max_tokens: 8192,
         messages: [{ role: "user", content: [
           { type: "image", source: { type: "base64", media_type: mediaType, data: image } },
           { type: "text", text: "Extract all the text from this image. Return only the extracted text, nothing else." }

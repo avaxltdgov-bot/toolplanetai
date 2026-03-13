@@ -54,20 +54,25 @@ export default function AIDetector({ darkMode }) {
     if (!text.trim()) return;
     setLoading(true); setResult(null);
     try {
-      const prompt = `You are an expert AI content detector. Analyze this text and return ONLY a JSON object:
+      const wordCount = text.trim().split(/\s+/).length;
+      const prompt = `You are an expert AI content detector. Analyze this text and return ONLY a JSON object with NO extra text:
 {
   "ai_percentage": 78,
   "verdict": "Likely AI Written",
   "confidence": "High",
   "sentences": [
-    {"text": "exact sentence from text", "ai_score": 90, "reason": "why this seems AI written"},
-    {"text": "another sentence", "ai_score": 20, "reason": "why this seems human"}
+    {"text": "first 8 words of sentence...", "ai_score": 90, "reason": "brief reason"}
   ],
-  "ai_patterns": ["pattern1", "pattern2"],
+  "ai_patterns": ["pattern1"],
   "human_patterns": ["pattern1"],
   "overall_analysis": "2 sentence analysis"
 }
-Analyze every sentence. Text: ${text}`;
+Rules:
+- Analyze max 10 sentences only (most important ones)
+- Keep each reason under 10 words
+- Return ONLY the JSON, no other text
+
+Text: ${text.slice(0, 2000)}`;
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 90000);
       const res = await fetch("https://toolplanetai-backend.onrender.com/api/ai", {
