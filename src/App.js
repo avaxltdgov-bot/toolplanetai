@@ -6,6 +6,7 @@ import SEOOptimizer from "./SEOOptimizer";
 import AITranslator from "./AITranslator";
 import FileProcessor from "./FileProcessor";
 import PDFTools from "./PDFTools";
+import AdvancedPDFEditor from "./AdvancedPDFEditor";
 import { useState, useEffect } from "react";
 
 const BACKEND = "https://toolplanetai-backend.onrender.com/api/ai";
@@ -18,7 +19,7 @@ const aiTools = [
   { id:"humanize",   icon:"🧬", label:"AI Humanizer",           desc:"Make AI text sound 100% human",                color:"#ec4899", category:"Writing",   badge:"🔥 Hot" },
   { id:"pdf2word", icon:"📄", label:"PDF to Word", desc:"Convert PDF to editable Word document", color:"#4361ee", category:"PDF Tools", badge:"New" },
   { id:"word2pdf", icon:"📝", label:"Word to PDF", desc:"Convert Word or TXT to PDF format", color:"#06d6a0", category:"PDF Tools", badge:"New" },
-  { id:"pdfeditor", icon:"✏️", label:"PDF Editor", desc:"Upload PDF, edit content, download", color:"#e91e8c", category:"PDF Tools", badge:"🔥 Hot" },
+  { id:"pdfeditor", icon:"✏️", label:"Advanced PDF Editor", desc:"Drag text and images onto PDF pages and export", color:"#e91e8c", category:"PDF Tools", badge:"🔥 Hot" },
   { id:"fileprocess", icon:"📂", label:"Smart File Processor",   desc:"Upload PDF/DOCX/TXT → process, edit & download", color:"#8b5cf6", category:"PDF Tools", badge:"🔥 Hot" },
   { id:"aidetector", icon:"🔍", label:"AI Detector",            desc:"Detect AI-written text sentence by sentence",  color:"#dc2626", category:"PDF Tools", badge:"Popular" },
   { id:"plagiarism", icon:"🛡", label:"Plagiarism Checker",     desc:"Check originality & highlight risky text",     color:"#f97316", category:"PDF Tools", badge:null },
@@ -490,7 +491,7 @@ export default function App() {
         {/* ── SPECIAL TOOLS ── */}
         {activeTool==="pdf2word"&&<div style={{animation:"fadeIn .3s ease"}}><PDFTools key="pdf2word" darkMode={darkMode} activeTool="pdf2word"/></div>}
         {activeTool==="word2pdf"&&<div style={{animation:"fadeIn .3s ease"}}><PDFTools key="word2pdf" darkMode={darkMode} activeTool="word2pdf"/></div>}
-        {activeTool==="pdfeditor"&&<div style={{animation:"fadeIn .3s ease"}}><PDFTools key="pdfeditor" darkMode={darkMode} activeTool="pdfeditor"/></div>}
+        {activeTool==="pdfeditor"&&<div style={{animation:"fadeIn .3s ease"}}><AdvancedPDFEditor darkMode={darkMode}/></div>}
         
         
         
