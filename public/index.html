@@ -13,6 +13,20 @@
       .tpai-ticker { width:100%; overflow:hidden; background:var(--tpai-orange); color:#0d0d0d; padding:10px 0; font-family:'Syne',sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; font-size:14px; white-space:nowrap; }
       .tpai-ticker span { display:inline-block; padding-left:2rem; animation:tpai-scroll 18s linear infinite; }
       @keyframes tpai-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-100%)} }
+      /* ===== MODERN 3D UI ===== */
+      body { background: radial-gradient(1200px 800px at 20% 0%, #1a1030 0%, #0d0d0d 55%), radial-gradient(1000px 700px at 90% 20%, #2a0f1a 0%, transparent 60%), #0d0d0d !important; background-attachment: fixed !important; }
+      .main-content { perspective: 1600px !important; }
+      .tool-card { background: linear-gradient(145deg, rgba(30,30,38,0.85), rgba(18,18,24,0.85)) !important; backdrop-filter: blur(14px) saturate(140%) !important; -webkit-backdrop-filter: blur(14px) saturate(140%) !important; border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 18px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.55), 0 2px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08) !important; transform-style: preserve-3d !important; transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease !important; }
+      .tool-card:hover { transform: translateY(-10px) rotateX(7deg) rotateY(-6deg) scale(1.03) !important; box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 40px rgba(255,77,28,0.35), inset 0 1px 0 rgba(255,255,255,0.15) !important; border-color: rgba(255,77,28,0.6) !important; }
+      .tool-card > div:first-child { border-radius: 14px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.25) !important; transform: translateZ(30px) !important; transition: transform .35s ease !important; }
+      .tool-card:hover > div:first-child { transform: translateZ(55px) scale(1.08) !important; }
+      .cat-pill { background: linear-gradient(145deg, rgba(40,40,50,0.6), rgba(20,20,26,0.6)) !important; backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important; border: 1px solid rgba(255,255,255,0.14) !important; border-radius: 999px !important; box-shadow: 0 6px 16px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.10) !important; transition: transform .25s ease, box-shadow .25s ease !important; }
+      .cat-pill:hover { transform: translateY(-3px) !important; box-shadow: 0 10px 24px rgba(0,0,0,0.5), 0 0 20px rgba(255,77,28,0.3) !important; }
+      .cat-pill.active, .cat-pill[data-active="true"] { background: linear-gradient(145deg, #FF6B3D, #FF4D1C) !important; color:#0d0d0d !important; box-shadow: 0 8px 24px rgba(255,77,28,0.5), inset 0 1px 0 rgba(255,255,255,0.4) !important; }
+      h1 { text-shadow: 0 4px 30px rgba(255,77,28,0.25), 0 2px 8px rgba(0,0,0,0.5) !important; }
+      input { backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08) !important; border-radius: 14px !important; }
+      .tpai-ticker { box-shadow: 0 8px 24px rgba(255,77,28,0.4) !important; }
+      @keyframes tpai-float { 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(-8px) } }
       </style>
     <script>
       window.addEventListener('load', function(){
