@@ -1,6 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style id="tpai-redesign">
+      :root { --tpai-orange: #FF4D1C; }
+      body { background:#0d0d0d !important; }
+      h1, h2, h3 { font-family:'Syne',sans-serif !important; letter-spacing:-0.02em !important; }
+      .cat-pill { border-radius:999px !important; border:1px solid rgba(255,255,255,0.18) !important; background:transparent !important; text-transform:uppercase !important; letter-spacing:0.08em !important; font-size:11px !important; padding:8px 16px !important; width:auto !important; }
+      .cat-pill[data-active="true"], .cat-pill.active { background:var(--tpai-orange) !important; color:#0d0d0d !important; border-color:var(--tpai-orange) !important; }
+      .tool-card { background:#141414 !important; border:1px solid rgba(255,255,255,0.08) !important; border-radius:4px !important; transition:all .2s ease !important; }
+      .tool-card:hover { border-color:var(--tpai-orange) !important; transform:translateY(-4px) !important; }
+      .tpai-ticker { width:100%; overflow:hidden; background:var(--tpai-orange); color:#0d0d0d; padding:10px 0; font-family:'Syne',sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; font-size:14px; white-space:nowrap; }
+      .tpai-ticker span { display:inline-block; padding-left:100%; animation:tpai-scroll 18s linear infinite; }
+      @keyframes tpai-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-100%)} }
+      </style>
+    <script>
+      window.addEventListener('load', function(){
+          setTimeout(function(){
+                if(document.querySelector('.tpai-ticker')) return;
+                      var t=document.createElement('div');
+                t.className='tpai-ticker';
+                t.innerHTML='<span>FREE AI TOOLS \u2022 PDF + AI WRITING \u2022 NO SIGNUP \u2022 REWRITE \u2022 HUMANIZE \u2022 SEO \u2022 TRANSLATE \u2022 GRAMMAR \u2022 FREE AI TOOLS \u2022 PDF + AI WRITING \u2022 NO SIGNUP \u2022</span>';
+                var mc=document.querySelector('.main-content')||document.body;
+                mc.insertBefore(t, mc.firstChild);
+          }, 800);
+      });
+    </script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-2T6JVRB9Y3"></script>
     <script>
